@@ -5,3 +5,4 @@ dash_daq==0.5.0
 pandas==1.5.0
 requests==2.28.1
 dnspython==2.2.1
+hvplot

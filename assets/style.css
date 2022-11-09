@@ -59,6 +59,40 @@ a {
   padding-right: 30px;
   padding-top: 64px;
 }
+/*************************border boxing *******--------------------*/
+.dashboard-box{
+ border: 1px solid gray;
+  width:fit-content;
+     min-height: 476px;
+    max-height: 476px;
+    overflow-x: auto;
+    min-width: 483px;
+    max-width: 483px;
+    font-color: white;
+
+  }
+
+
+  .dashboard-boxlarge{
+ border: 1px solid gray;
+  width:fit-content;
+    min-height: 476px;
+    max-height: 472px;
+    overflow-x: auto;
+    min-width: 797px;
+    max-width: 799px;
+  }
+  .dashboard-boxmed{
+ box-sizing: content-box;
+  width: 100px;
+  height: 100px;
+  padding: 10px;
+  border: 10px solid blue;
+  }
+  .center {
+  margin-left: auto;
+  margin-right: auto;
+}
 /* Graph Control Objects ––––––––––––––––––––––––––––––––––––––––––––––––––*/
 .div-user-controls {
   padding-left: 55px;

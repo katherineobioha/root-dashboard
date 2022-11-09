@@ -8,11 +8,15 @@ import requests
 import calendar
 import getGeoLocation as db
 from datetime import datetime
-
+import json as json
+from pandas import DataFrame
 from dash.dependencies import Input, Output
 from plotly import graph_objs as go
 from plotly.graph_objs import *
 from datetime import datetime as dt
+import hvplot.pandas
+
+
 
 
 app = dash.Dash(
@@ -38,6 +42,14 @@ server = app.server
 #         data={'Day': day, 'Description': description, 'Temperature': temp, 'Humidity': humidity, 'Wind': wind_speed})
 #
 #     return df3
+
+styles = {
+    'pre': {
+        'border': 'thin lightgrey solid',
+        'overflowX': 'scroll'
+    }
+}
+
 def api_call():
     latInitial =  5.544230
     lonInitial =  5.760269
@@ -63,14 +75,14 @@ def api_call():
 def make_weather_table():
     ''' Return a dash definitio of an HTML table for a Pandas dataframe '''
     dtf = api_call()
-    fontSize = "10px"
+    fontSize = "18px"
     table =[html.Tr([
 						html.Th(['Day'],style={"font-size":fontSize}),html.Th([' '],style={"font-size":fontSize}),html.Th(['Low'],style={"font-size":fontSize}),html.Th(['High'],style={"font-size":fontSize}),html.Th(['Wind'],style={"font-size":fontSize})
-					], className="table" )]
+					], className="center" )]
     for index, row in dtf.iterrows():
         html_row = []
         for i in range(len(row)):
-            html_row.append( html.Td([ row[i] ],style={"font-size":fontSize}) )
+            html_row.append( html.Td([ row[i] ],style={"font-size":fontSize}, className="center") )
         table.append( html.Tr( html_row ) )
 
     return table
@@ -125,101 +137,38 @@ app.layout = html.Div(
             children=[
                 # Column for user controls
                 html.Div(
-                    className="three columns div-user-controls",
+                    className="three columns dashboard-box div-user-controls-left",
                     children=[
-                        html.A(
-                            html.Img(
-                                className="logo",
-                                src=app.get_asset_url("dash-logo-new.png"),
-                            ),
-                            href="https://plotly.com/dash/",
-                        ),
-                        html.H2("ROOT - REVEMI"),
-                        html.P(
-                            """Select different days using the date picker or by selecting
-                            different time frames on the histogram."""
-                        ),
-                        html.Div(
-                            className="div-for-dropdown",
-                            children=[
-                                dcc.DatePickerSingle(
-                                    id="date-picker",
-                                    min_date_allowed=dt(2014, 4, 1),
-                                    max_date_allowed=dt(2014, 9, 30),
-                                    initial_visible_month=dt(2014, 4, 1),
-                                    date=dt(2014, 4, 1).date(),
-                                    display_format="MMMM D, YYYY",
-                                    style={"border": "0px solid black"},
-                                )
-                            ],
-                        ),
-                        # Change to side-by-side for mobile layout
-                        html.Div(
-                            className="row",
-                            children=[
-                                html.Div(
-                                    className="div-for-dropdown",
-                                    children=[
-                                        # Dropdown for locations on map
-                                        dcc.Dropdown(
-                                            id="location-dropdown",
-                                            options=[
-                                                {"label": i, "value": i}
-                                                for i in list_of_locations
-                                            ],
-                                            placeholder="Select a location",
-                                        )
-                                    ],
-                                ),
-                                html.Div(
-                                    className="div-for-dropdown",
-                                    children=[
-                                        # Dropdown to select times
-                                        dcc.Dropdown(
-                                            id="bar-selector",
-                                            options=[
-                                                {
-                                                    "label": str(n) + ":00",
-                                                    "value": str(n),
-                                                }
-                                                for n in range(24)
-                                            ],
-                                            multi=True,
-                                            placeholder="Select certain hours",
-                                        )
-                                    ],
-                                ),
-                            ],
-                        ),
-                        html.P(id="total-rides"),
-                        html.P(id="total-rides-selection"),
-                        html.P(id="date-value"),
-                        dcc.Markdown(
-                            """
-                            Source: [FiveThirtyEight](https://github.com/fivethirtyeight/uber-tlc-foil-response/tree/master/uber-trip-data)
+                        html.Div([
+                            dcc.Markdown("""
+                                 Farmer Profile
 
-                            Links: [Source Code](https://github.com/plotly/dash-sample-apps/tree/main/apps/dash-uber-rides-demo) | [Enterprise Demo](https://plotly.com/get-demo/)
-                            """
-                        ),
+                                 Click on points in the graph to view farmers in that location.
+                             """),
+                            html.Pre(id='click-data' ),
+                            #, style=styles['pre']
+                        ]),
                     ],
                 ),
                 # Column for app graphs and plots
                 html.Div(
-                    className="six columns div-for-charts bg-grey",
+                    className="three columns div-for-charts bg-grey dashboard-boxlarge",
                     children=[
-                        dcc.Graph(id="map-graph"),
-                        html.Div(
-                            className="text-padding",
-                            children=[
-                                "Select any of the bars on the histogram to section data by time."
-                            ],
-                        ),
-                        dcc.Graph(id="histogram"),
+                        dcc.Graph(id="map-graph")
+                        # html.Div(
+                        #     className="text-padding",
+                        #     children=[
+                        #         "Select any of the bars on the histogram to section data by time."
+                        #     ],
+                        # ),
+                        # dcc.Graph(id="histogram"),
+                        #dcc.Textarea(id="")
                     ],
                 ),
+
               #column for another
                 html.Div(
-                    className="three columns div-user-controls-right",
+                    className="two columns div-user-controls-right dashboard-box",
                     children=[
                         # html.A(
                         #     html.Img(
@@ -247,19 +196,36 @@ app.layout = html.Div(
                                 }
                             },
                         ),
-                        # html.Div([
-                                html.Br(),
-                                html.Hr(),
-                                html.P("Weather Information", style={"textAlign":"center", "font-size":"10px"}),
-                                html.Table(
-                                    make_weather_table()
-                                ),
+                    ],
+                ),
+                html.Div(
+                    className="three columns dashboard-box div-user-controls-left",
+                    children=[
 
-                               # ]),
-
+                            html.Br(),
+                            html.P("Weather Information", style={"textAlign": "center", "font-size": "20px"}),
+                            html.Hr(),
+                            html.Table(
+                                make_weather_table()
+                            ),
 
                     ],
                 ),
+                html.Div(
+                    className="three columns  dashboard-box",
+                    children=[
+                        # dcc.Graph(id="map-graph")
+                        # html.Div(
+                        #     className="text-padding",
+                        #     children=[
+                        #         "Select any of the bars on the histogram to section data by time."
+                        #     ],
+                        # ),
+                        # dcc.Graph(id="histogram"),
+                        dcc.Textarea(id="")
+                    ],
+                ),
+
             ],
         )
     ]
@@ -320,149 +286,159 @@ def get_selection(month, day, selection):
 
 
 # Selected Data in the Histogram updates the Values in the Hours selection dropdown menu
-@app.callback(
-    Output("bar-selector", "value"),
-    [Input("histogram", "selectedData"), Input("histogram", "clickData")],
-)
-def update_bar_selector(value, clickData):
-    holder = []
-    if clickData:
-        holder.append(str(int(clickData["points"][0]["x"])))
-    if value:
-        for x in value["points"]:
-            holder.append(str(int(x["x"])))
-    return list(set(holder))
+# @app.callback(
+#     Output("bar-selector", "value"),
+#     [Input("histogram", "selectedData"), Input("histogram", "clickData")],
+# )
+# def update_bar_selector(value, clickData):
+#     holder = []
+#     if clickData:
+#         holder.append(str(int(clickData["points"][0]["x"])))
+#     if value:
+#         for x in value["points"]:
+#             holder.append(str(int(x["x"])))
+#     return list(set(holder))
 
+@app.callback(
+    Output('click-data', 'children'),
+    [Input('map-graph', 'clickData')])
+def display_click_data(clickData):
+    data=None
+    if clickData is not None:
+        # print()
+        data =db.getFarmsByLocation(clickData["points"][0]["customdata"])
+
+    return json.dumps(data, indent=2)
 
 # Clear Selected Data if Click Data is used
-@app.callback(Output("histogram", "selectedData"), [Input("histogram", "clickData")])
-def update_selected_data(clickData):
-    if clickData:
-        return {"points": []}
-
-
-# Update the total number of rides Tag
-@app.callback(Output("total-rides", "children"), [Input("date-picker", "date")])
-def update_total_rides(datePicked):
-    date_picked = dt.strptime(datePicked, "%Y-%m-%d")
-    return "Total Number of rides: {:,d}".format(
-        len(totalList[date_picked.month - 4][date_picked.day - 1])
-    )
-
-
-# Update the total number of rides in selected times
-@app.callback(
-    [Output("total-rides-selection", "children"), Output("date-value", "children")],
-    [Input("date-picker", "date"), Input("bar-selector", "value")],
-)
-def update_total_rides_selection(datePicked, selection):
-    firstOutput = ""
-
-    if selection is not None or len(selection) is not 0:
-        date_picked = dt.strptime(datePicked, "%Y-%m-%d")
-        totalInSelection = 0
-        for x in selection:
-            totalInSelection += len(
-                totalList[date_picked.month - 4][date_picked.day - 1][
-                    totalList[date_picked.month - 4][date_picked.day - 1].index.hour
-                    == int(x)
-                ]
-            )
-        firstOutput = "Total rides in selection: {:,d}".format(totalInSelection)
-
-    if (
-        datePicked is None
-        or selection is None
-        or len(selection) is 24
-        or len(selection) is 0
-    ):
-        return firstOutput, (datePicked, " - showing hour(s): All")
-
-    holder = sorted([int(x) for x in selection])
-
-    if holder == list(range(min(holder), max(holder) + 1)):
-        return (
-            firstOutput,
-            (
-                datePicked,
-                " - showing hour(s): ",
-                holder[0],
-                "-",
-                holder[len(holder) - 1],
-            ),
-        )
-
-    holder_to_string = ", ".join(str(x) for x in holder)
-    return firstOutput, (datePicked, " - showing hour(s): ", holder_to_string)
-
-
-# Update Histogram Figure based on Month, Day and Times Chosen
-@app.callback(
-    Output("histogram", "figure"),
-    [Input("date-picker", "date"), Input("bar-selector", "value")],
-)
-def update_histogram(datePicked, selection):
-    date_picked = dt.strptime(datePicked, "%Y-%m-%d")
-    monthPicked = date_picked.month - 4
-    dayPicked = date_picked.day - 1
-
-    [xVal, yVal, colorVal] = get_selection(monthPicked, dayPicked, selection)
-
-    layout = go.Layout(
-        bargap=0.01,
-        bargroupgap=0,
-        barmode="group",
-        margin=go.layout.Margin(l=10, r=0, t=0, b=50),
-        showlegend=False,
-        plot_bgcolor="#323130",
-        paper_bgcolor="#323130",
-        dragmode="select",
-        font=dict(color="white"),
-        xaxis=dict(
-            range=[-0.5, 23.5],
-            showgrid=False,
-            nticks=25,
-            fixedrange=True,
-            ticksuffix=":00",
-        ),
-        yaxis=dict(
-            range=[0, max(yVal) + max(yVal) / 4],
-            showticklabels=False,
-            showgrid=False,
-            fixedrange=True,
-            rangemode="nonnegative",
-            zeroline=False,
-        ),
-        annotations=[
-            dict(
-                x=xi,
-                y=yi,
-                text=str(yi),
-                xanchor="center",
-                yanchor="bottom",
-                showarrow=False,
-                font=dict(color="white"),
-            )
-            for xi, yi in zip(xVal, yVal)
-        ],
-    )
-
-    return go.Figure(
-        data=[
-            go.Bar(x=xVal, y=yVal, marker=dict(color=colorVal), hoverinfo="x"),
-            go.Scatter(
-                opacity=0,
-                x=xVal,
-                y=yVal / 2,
-                hoverinfo="none",
-                mode="markers",
-                marker=dict(color="rgb(66, 134, 244, 0)", symbol="square", size=40),
-                visible=True,
-            ),
-        ],
-        layout=layout,
-    )
-
+# @app.callback(Output("histogram", "selectedData"), [Input("histogram", "clickData")])
+# def update_selected_data(clickData):
+#     if clickData:
+#         return {"points": []}
+#
+#
+# # Update the total number of rides Tag
+# @app.callback(Output("total-rides", "children"), [Input("date-picker", "date")])
+# def update_total_rides(datePicked):
+#     date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+#     return "Total Number of rides: {:,d}".format(
+#         len(totalList[date_picked.month - 4][date_picked.day - 1])
+#     )
+#
+#
+# # Update the total number of rides in selected times
+# @app.callback(
+#     [Output("total-rides-selection", "children"), Output("date-value", "children")],
+#     [Input("date-picker", "date"), Input("bar-selector", "value")],
+# )
+# def update_total_rides_selection(datePicked, selection):
+#     firstOutput = ""
+#
+#     if selection is not None or len(selection) is not 0:
+#         date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+#         totalInSelection = 0
+#         for x in selection:
+#             totalInSelection += len(
+#                 totalList[date_picked.month - 4][date_picked.day - 1][
+#                     totalList[date_picked.month - 4][date_picked.day - 1].index.hour
+#                     == int(x)
+#                 ]
+#             )
+#         firstOutput = "Total rides in selection: {:,d}".format(totalInSelection)
+#
+#     if (
+#         datePicked is None
+#         or selection is None
+#         or len(selection) is 24
+#         or len(selection) is 0
+#     ):
+#         return firstOutput, (datePicked, " - showing hour(s): All")
+#
+#     holder = sorted([int(x) for x in selection])
+#
+#     if holder == list(range(min(holder), max(holder) + 1)):
+#         return (
+#             firstOutput,
+#             (
+#                 datePicked,
+#                 " - showing hour(s): ",
+#                 holder[0],
+#                 "-",
+#                 holder[len(holder) - 1],
+#             ),
+#         )
+#
+#     holder_to_string = ", ".join(str(x) for x in holder)
+#     return firstOutput, (datePicked, " - showing hour(s): ", holder_to_string)
+#
+#
+# # Update Histogram Figure based on Month, Day and Times Chosen
+# @app.callback(
+#     Output("histogram", "figure"),
+#     [Input("date-picker", "date"), Input("bar-selector", "value")],
+# )
+# def update_histogram(datePicked, selection):
+#     date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+#     monthPicked = date_picked.month - 4
+#     dayPicked = date_picked.day - 1
+#
+#     [xVal, yVal, colorVal] = get_selection(monthPicked, dayPicked, selection)
+#
+#     layout = go.Layout(
+#         bargap=0.01,
+#         bargroupgap=0,
+#         barmode="group",
+#         margin=go.layout.Margin(l=10, r=0, t=0, b=50),
+#         showlegend=False,
+#         plot_bgcolor="#323130",
+#         paper_bgcolor="#323130",
+#         dragmode="select",
+#         font=dict(color="white"),
+#         xaxis=dict(
+#             range=[-0.5, 23.5],
+#             showgrid=False,
+#             nticks=25,
+#             fixedrange=True,
+#             ticksuffix=":00",
+#         ),
+#         yaxis=dict(
+#             range=[0, max(yVal) + max(yVal) / 4],
+#             showticklabels=False,
+#             showgrid=False,
+#             fixedrange=True,
+#             rangemode="nonnegative",
+#             zeroline=False,
+#         ),
+#         annotations=[
+#             dict(
+#                 x=xi,
+#                 y=yi,
+#                 text=str(yi),
+#                 xanchor="center",
+#                 yanchor="bottom",
+#                 showarrow=False,
+#                 font=dict(color="white"),
+#             )
+#             for xi, yi in zip(xVal, yVal)
+#         ],
+#     )
+#
+#     return go.Figure(
+#         data=[
+#             go.Bar(x=xVal, y=yVal, marker=dict(color=colorVal), hoverinfo="x"),
+#             go.Scatter(
+#                 opacity=0,
+#                 x=xVal,
+#                 y=yVal / 2,
+#                 hoverinfo="none",
+#                 mode="markers",
+#                 marker=dict(color="rgb(66, 134, 244, 0)", symbol="square", size=40),
+#                 visible=True,
+#             ),
+#         ],
+#         layout=layout,
+#     )
+#
 
 # Get the Coordinates of the chosen months, dates and times
 def getLatLonColor(selectedData, month, day):
@@ -484,28 +460,38 @@ def getLatLonColor(selectedData, month, day):
 @app.callback(
     Output("map-graph", "figure"),
     [
-        Input("date-picker", "date"),
-        Input("bar-selector", "value"),
-        Input("location-dropdown", "value"),
+        # Input("date-picker", "date"),
+        # Input("bar-selector", "value"),
+         Input("map-graph", 'selectedData'),
     ],
 )
-def update_graph(datePicked, selectedData, selectedLocation):
+def update_graph( selectedData):
     zoom = 12.0
-    latInitial = 5.7575982
-    lonInitial = 5.3125705
+    latInitial = 5.6704358#5.7575982
+    lonInitial = 5.8353837#5.3125705
     bearing = 0
+
     list_of_locations = db.getFarmLocation()
-    if selectedLocation:
-        zoom = 15.0
-        latInitial = list_of_locations[selectedLocation]["LOCATION"]["lat"]
-        lonInitial = list_of_locations[selectedLocation]["LOCATION"]["lng"]
+    # if selectedLocation:
+    #     zoom = 15.0
+    #     latInitial = list_of_locations[selectedLocation]["LOCATION"]["lat"]
+    #     lonInitial = list_of_locations[selectedLocation]["LOCATION"]["lng"]
+    x=0
+    sizeGeoLoc={}
+    ### count each farm location found
+    for i in range(0,len(list_of_locations)):
+        q=list_of_locations[i]["FARM LOCATION"]
+        if list_of_locations[i]["FARM LOCATION"] in sizeGeoLoc:
+            sizeGeoLoc[q]=sizeGeoLoc[q]+1
+        else:
+            sizeGeoLoc[q]=1
+    print(sizeGeoLoc)
+    # date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+    # monthPicked = date_picked.month - 4
+    # dayPicked = date_picked.day - 1
+    # listCoords = getLatLonColor(selectedData, monthPicked, dayPicked)
 
-    date_picked = dt.strptime(datePicked, "%Y-%m-%d")
-    monthPicked = date_picked.month - 4
-    dayPicked = date_picked.day - 1
-    listCoords = getLatLonColor(selectedData, monthPicked, dayPicked)
-
-    return go.Figure(
+    f= go.Figure(
         data=[
             # Data for all rides based on date and time
             # Scattermapbox(
@@ -554,8 +540,9 @@ def update_graph(datePicked, selectedData, selectedLocation):
                 lon=[list_of_locations[i]["LOCATION"]["lng"] for i in range(0, len(list_of_locations))],
                 mode="markers",
                 hoverinfo="text",
-                text=[i for i in list_of_locations],
+                customdata=[list_of_locations[i]["FARM LOCATION"] for i in range(0, len(list_of_locations))],
                 marker=dict(size=8, color="#000000"),
+                text= [sizeGeoLoc[i["FARM LOCATION"]] for i in list_of_locations]
             ),
         ],
         layout=Layout(
@@ -576,9 +563,9 @@ def update_graph(datePicked, selectedData, selectedLocation):
                             dict(
                                 args=[
                                     {
-                                        "mapbox.zoom": 12,
-                                        "mapbox.center.lon": "-73.991251",
-                                        "mapbox.center.lat": "40.7272",
+                                        "mapbox.zoom": 4, #12
+                                        "mapbox.center.lon": " 5.8353837",#"-73.991251",
+                                        "mapbox.center.lat":"5.6704358", #"40.7272",
                                         "mapbox.bearing": 0,
                                         "mapbox.style": "dark",
                                     }
@@ -604,6 +591,13 @@ def update_graph(datePicked, selectedData, selectedLocation):
             ],
         ),
     )
+    #clickMe(f.data[0].on_click)
+    return f
+
+
+def clickMe(clickEvent):
+    return "Test click event"
+
 # def update_graph(datePicked, selectedData, selectedLocation):
 #     zoom = 12.0
 #     latInitial = 40.7272#5.7575982

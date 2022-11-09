@@ -43,7 +43,10 @@ Taken from https://codepen.io/chriddyp/pen/bWLwgP.css
         width: 80%;
    }
     .column, .columns {
-        margin-left: 4%;
+        margin-left: 1%;
+   }
+    .column2, .columns2 {
+        margin-left: 1%;
    }
     .column:first-child, .columns:first-child {
         margin-left: 0;
