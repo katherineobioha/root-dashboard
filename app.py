@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
 import dash_daq as daq
@@ -13,6 +14,7 @@ from pandas import DataFrame
 from dash.dependencies import Input, Output
 from plotly import graph_objs as go
 from plotly.graph_objs import *
+
 from datetime import datetime as dt
 import hvplot.pandas
 
@@ -20,9 +22,9 @@ import hvplot.pandas
 
 
 app = dash.Dash(
-    __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],
+    __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],external_stylesheets=[dbc.themes.LUX],
 )
-app.title = "New York Uber Rides"
+app.title = "Roots - Revemi"
 server = app.server
 ##----------------------- call weather api
 # def api_call(input_value="Ames,us"):
@@ -75,7 +77,7 @@ def api_call():
 def make_weather_table():
     ''' Return a dash definitio of an HTML table for a Pandas dataframe '''
     dtf = api_call()
-    fontSize = "18px"
+    fontSize = "12px"
     table =[html.Tr([
 						html.Th(['Day'],style={"font-size":fontSize}),html.Th([' '],style={"font-size":fontSize}),html.Th(['Low'],style={"font-size":fontSize}),html.Th(['High'],style={"font-size":fontSize}),html.Th(['Wind'],style={"font-size":fontSize})
 					], className="center" )]
@@ -133,7 +135,7 @@ totalList = np.array(totalList)
 app.layout = html.Div(
     children=[
         html.Div(
-            className="row",
+            className="row bordercontainer",
             children=[
                 # Column for user controls
                 html.Div(
@@ -214,15 +216,39 @@ app.layout = html.Div(
                 html.Div(
                     className="three columns  dashboard-box",
                     children=[
-                        # dcc.Graph(id="map-graph")
-                        # html.Div(
-                        #     className="text-padding",
-                        #     children=[
-                        #         "Select any of the bars on the histogram to section data by time."
-                        #     ],
-                        # ),
-                        # dcc.Graph(id="histogram"),
-                        dcc.Textarea(id="")
+                        dbc.ListGroup(
+                            [
+                                dbc.ListGroupItem(
+                                    [   html.Img(src="...",className="mr-3"),
+                                        html.Div(
+                                            [
+                                                html.H5("This item has a heading", className="mt-0 mb-1"),
+                                                html.Small("Yay!", className="text-success"),
+                                            ],
+                                            className="media-body",
+                                        ),
+                                       # html.P("And some text underneath", className="mb-1"),
+                                       # html.Small("Plus some small print.", className="text-muted"),
+                                    ],className="media"
+                                ),
+                                dbc.ListGroupItem(
+                                    [
+                                        html.Div(
+                                            [
+                                                html.H5(
+                                                    "This item also has a heading", className="mb-1"
+                                                ),
+                                                html.Small("Ok!", className="text-warning"),
+                                            ],
+                                            className="d-flex w-100 justify-content-between",
+                                        ),
+                                        html.P("And some more text underneath too", className="mb-1"),
+                                        html.Small(
+                                            "Plus even more small print.", className="text-muted"
+                                        ),
+                                    ]
+                                ),
+                            ]),
                     ],
                 ),
 

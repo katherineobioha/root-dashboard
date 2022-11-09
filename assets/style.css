@@ -54,6 +54,18 @@ a {
 #map-graphse {
   flex-grow: 1
 }
+
+/***************outer border------------------------*/
+.bordercontainer{
+  border: 1px solid grey;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  padding-left: 19px;
+  padding-top: 28px;
+  background-color:black;
+}
+
 .div-user-controls-right {
   padding-left: 25px;
   padding-right: 30px;
@@ -61,26 +73,26 @@ a {
 }
 /*************************border boxing *******--------------------*/
 .dashboard-box{
- border: 1px solid gray;
+ border: 11px solid black;
   width:fit-content;
-     min-height: 476px;
-    max-height: 476px;
-    overflow-x: auto;
-    min-width: 483px;
-    max-width: 483px;
-    font-color: white;
+  min-height: 335px;
+  max-height: 335px;
+  overflow-x: auto;
+  min-width: 323px;
+  max-width: 323px;
+  background-color:grey
 
   }
 
 
   .dashboard-boxlarge{
- border: 1px solid gray;
+ border: 1px solid black;
   width:fit-content;
-    min-height: 476px;
-    max-height: 472px;
+    min-height: 335px;
+    max-height: 335px;
     overflow-x: auto;
-    min-width: 797px;
-    max-width: 799px;
+    min-width: 670px;
+    max-width: 670px;
   }
   .dashboard-boxmed{
  box-sizing: content-box;
@@ -89,10 +101,16 @@ a {
   padding: 10px;
   border: 10px solid blue;
   }
-  .center {
+
+  table {
+  table-layout: auto;
+  width: 100%;
+}
+ /* .center {
   margin-left: auto;
   margin-right: auto;
-}
+  text-align:center;
+}*/
 /* Graph Control Objects ––––––––––––––––––––––––––––––––––––––––––––––––––*/
 .div-user-controls {
   padding-left: 55px;
