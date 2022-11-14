@@ -7,11 +7,12 @@ import numpy as np
 import dash_daq as daq
 import requests
 import calendar
-import getGeoLocation as db
+import DBConnect as db
+import readNews as news
 from datetime import datetime
 import json as json
 from pandas import DataFrame
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from plotly import graph_objs as go
 from plotly.graph_objs import *
 
@@ -77,7 +78,7 @@ def api_call():
 def make_weather_table():
     ''' Return a dash definitio of an HTML table for a Pandas dataframe '''
     dtf = api_call()
-    fontSize = "12px"
+    fontSize = "10px"
     table =[html.Tr([
 						html.Th(['Day'],style={"font-size":fontSize}),html.Th([' '],style={"font-size":fontSize}),html.Th(['Low'],style={"font-size":fontSize}),html.Th(['High'],style={"font-size":fontSize}),html.Th(['Wind'],style={"font-size":fontSize})
 					], className="center" )]
@@ -89,6 +90,27 @@ def make_weather_table():
 
     return table
 
+def getNews():
+    newNews = news.getnews()
+    neww= DataFrame(newNews)
+    # print(neww)
+    newss =[]
+    for i in range(0,len(neww)):
+        newss.append(html.Div([ html.Div(
+                 [
+                                                    html.A(
+                                                        html.H5(neww.title[i], className="mt-0 mb-1"),
+                                                        href=neww.link[i]
+                                                    ),
+
+                                                    # html.Small(newNews.description, className="text-success"),
+                                                     html.Small(neww.published[i], className="text-success")
+
+                                                ],
+                                                className="media-body"
+                                            ),]))#newNews.published, newNews.link, newNews.title, newNews.description
+
+    return html.Div(newss)
 # Plotly mapbox public token
 mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
 
@@ -138,13 +160,123 @@ app.layout = html.Div(
             className="row bordercontainer",
             children=[
                 # Column for user controls
+                dbc.Modal(
+                    [   dbc.ModalHeader("Add Farmer", style={"color":"green"}),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Name", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="name-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ],
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Sex", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="sex-input",
+
+                                    type="text"
+
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Age", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="age-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Phone no", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="phone-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Farm Location", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="farm-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("LGA", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="lga-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Product", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="product-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        dbc.FormText(
+                            [
+                                dbc.Label("Farm size", size="md", style={"color":"green"}),
+                                dcc.Input(
+                                    id="size-input",
+
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                            ]
+                        ),
+                        # dbc.Input("BODY OF MODAL"),
+
+                        dbc.ModalFooter([
+                            html.Button('SUBMIT', id='submit-val', n_clicks=0, style={"color":"green"}),
+                            html.Button('CLOSE', id='close', n_clicks=0, style={"color":"green"}),
+                            # dbc.Button("SUBMIT", id="", className="")
+                            html.Div(id="container-button-basic", className="container-basic" )
+                        ]),
+                    ],
+                    id="modal",
+                ),
                 html.Div(
-                    className="three columns dashboard-box div-user-controls-left",
+                    className="card three columns dashboard-box div-user-controls-left",
                     children=[
-                        html.Div([
+                        html.Div(className="card-header",
+                        children=[
                             dcc.Markdown("""
                                  Farmer Profile
-
+                             """),
+                        html.Button("Add Farmer",id='open-modal', n_clicks=0, style={"color":"white"})
+                            #, style=styles['pre']
+                        ]),
+                        html.Div(className="card-body",
+                        children=[
+                            dcc.Markdown("""
+                        
                                  Click on points in the graph to view farmers in that location.
                              """),
                             html.Pre(id='click-data' ),
@@ -154,7 +286,16 @@ app.layout = html.Div(
                 ),
                 # Column for app graphs and plots
                 html.Div(
-                    className="three columns div-for-charts bg-grey dashboard-boxlarge",
+                    className="card three columnlarge div-for-charts bg-grey dashboard-boxlarge",
+                    children=[
+                        html.Div(className="card-header",
+                                 children=[
+                                     dcc.Markdown("""
+                                Map
+                            """),
+                                     # , style=styles['pre']
+                                 ]),
+                    html.Div(className="card-body",
                     children=[
                         dcc.Graph(id="map-graph")
                         # html.Div(
@@ -165,12 +306,23 @@ app.layout = html.Div(
                         # ),
                         # dcc.Graph(id="histogram"),
                         #dcc.Textarea(id="")
+                    ]),
                     ],
                 ),
 
               #column for another
+
                 html.Div(
-                    className="two columns div-user-controls-right dashboard-box",
+                    className=" card three columns div-user-controls-left dashboard-box",
+                    children=[
+                    html.Div(className="card-header",
+                        children=[
+                            dcc.Markdown("""
+                                Food security risk
+                             """),
+                            #, style=styles['pre']
+                        ]),
+                    html.Div(className="card-body center-body",
                     children=[
                         # html.A(
                         #     html.Img(
@@ -185,8 +337,8 @@ app.layout = html.Div(
                         daq.Gauge(
                             color={"gradient":True,"ranges":{"green":[0,3],"yellow":[3,7],"red":[7,10]}},
                             value=5,
-                            size=140,
-                            label='Food security risk',
+                            size=200,
+
                             max=10,
                             min=0,
                         scale={
@@ -198,57 +350,54 @@ app.layout = html.Div(
                                 }
                             },
                         ),
+                    ]),
                     ],
                 ),
                 html.Div(
-                    className="three columns dashboard-box div-user-controls-left",
+                    className="card three columns dashboard-box div-user-controls-left",
                     children=[
+                        html.Div(className="card-header",
+                                 children=[
+                                     dcc.Markdown("""
+                                Weather Information
+                            """),
+                                     # , style=styles['pre']
+                                 ]),
+                    html.Div(className="card-body",
+                    children=[
+                            #html.P("Weather Information", style={"textAlign": "center", "font-size": "20px"}),
 
-                            html.Br(),
-                            html.P("Weather Information", style={"textAlign": "center", "font-size": "20px"}),
-                            html.Hr(),
                             html.Table(
                                 make_weather_table()
-                            ),
+                            ,style={"width":"2%", "border":"1px"}),
 
+                    ]),
                     ],
                 ),
                 html.Div(
-                    className="three columns  dashboard-box",
+                    className="card three columns  dashboard-box",
+children=[
+html.Div(className="card-header",
+                        children=[
+                            dcc.Markdown("""
+                                Information
+                             """),
+                            #, style=styles['pre']
+                        ]),
+            html.Div(className="card-body",
                     children=[
                         dbc.ListGroup(
                             [
-                                dbc.ListGroupItem(
-                                    [   html.Img(src="...",className="mr-3"),
-                                        html.Div(
-                                            [
-                                                html.H5("This item has a heading", className="mt-0 mb-1"),
-                                                html.Small("Yay!", className="text-success"),
-                                            ],
-                                            className="media-body",
-                                        ),
-                                       # html.P("And some text underneath", className="mb-1"),
-                                       # html.Small("Plus some small print.", className="text-muted"),
+
+                                    dbc.ListGroupItem(
+
+                                    [
+                                      getNews()
                                     ],className="media"
                                 ),
-                                dbc.ListGroupItem(
-                                    [
-                                        html.Div(
-                                            [
-                                                html.H5(
-                                                    "This item also has a heading", className="mb-1"
-                                                ),
-                                                html.Small("Ok!", className="text-warning"),
-                                            ],
-                                            className="d-flex w-100 justify-content-between",
-                                        ),
-                                        html.P("And some more text underneath too", className="mb-1"),
-                                        html.Small(
-                                            "Plus even more small print.", className="text-muted"
-                                        ),
-                                    ]
-                                ),
+
                             ]),
+                    ]),
                     ],
                 ),
 
@@ -326,6 +475,55 @@ def get_selection(month, day, selection):
 #     return list(set(holder))
 
 @app.callback(
+    Output('container-button-basic', 'children'),
+    Input('submit-val', 'n_clicks'),
+    [State('name-input', 'value'),
+    State('age-input', 'value'),
+     State('farm-input', 'value'),State('phone-input', 'value'),
+     State('lga-input', 'value'),State('sex-input', 'value'),
+     State('product-input', 'value'),State('size-input', 'value')]
+
+)
+def update_output(n_clicks, value, value1, value2, value3, value4, value5, value6, value7):
+    #return value ,value1, value2, value3, value4, value5, value6, value7
+    # msg = " "
+    # if "submit-val" == dash.callback_context.triggered:
+    msg=' '
+    try:
+        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+        if 'submit-val' in changed_id:
+            farmer = {"NAME":value,
+                  "AGE": value1,
+                  "FARM LOCATION":value2,
+                  "PHONE NO": value3,
+                  "LGA": value4,
+                  "SEX": value5,
+                  "PRODUCT TYPE": value6,
+                  "FARM SIZE": value7
+            }
+
+            x= db.addFarmerToDB(farmer)
+            print(farmer)
+            msg = html.Div("You have succesfully saved the farmer. Click the close button.", style ={"color":"green", "align-content":"stretch","font-size":"11px", "border":"2px","border-color": "green"}, className="alert alert-success", role="alert")
+    except:
+        msg=html.Div("An error occured. Please contact the administrator.", style ={"color":"red", "align-content":"stretch","font-size":"11px", "border":"2px",
+                                                                                          "border-color": "red"}, className="alert alert-danger", role="alert")
+    return msg
+
+
+@app.callback(
+    Output("modal", "is_open"),
+    [Input("open-modal", "n_clicks"), Input("close", "n_clicks")],
+    [State("modal", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
+
+
+@app.callback(
     Output('click-data', 'children'),
     [Input('map-graph', 'clickData')])
 def display_click_data(clickData):
@@ -333,7 +531,8 @@ def display_click_data(clickData):
     if clickData is not None:
         # print()
         data =db.getFarmsByLocation(clickData["points"][0]["customdata"])
-
+    if clickData is None:
+        return ''
     return json.dumps(data, indent=2)
 
 # Clear Selected Data if Click Data is used
@@ -492,7 +691,7 @@ def getLatLonColor(selectedData, month, day):
     ],
 )
 def update_graph( selectedData):
-    zoom = 12.0
+    zoom = 10.0
     latInitial = 5.6704358#5.7575982
     lonInitial = 5.8353837#5.3125705
     bearing = 0

@@ -52,3 +52,7 @@ You can run the app on your browser at http://127.0.0.1:8050
 ## Resources
 
 To learn more about Dash, please visit [documentation](https://plot.ly/dash).
+
+
+Tutorial:
+Update geocode in DB - db.getCollection("user").updateMany({"FARM LOCATION": "Uvwie"}, [{$set:{"LOCATION":{"lat" :5.5649555, "lng": 5.7826597}}}])

@@ -42,10 +42,20 @@ a {
   flex-grow: 1 
 }
 #map-graph {
-  flex-grow: 1 
+  flex-grow: 1;
+  height: 288px;
+
 }
 .mapboxgl-canvas, .mapboxgl-map {
   min-width: 100%;
+}
+
+.columnlarge{
+width: 100%;
+    float: left;
+    box-sizing: border-box;
+    margin-right: 26px;
+    margin-top: -4px;
 }
 /*right panel-----------------------------------------***/
 #histogramse {
@@ -62,8 +72,10 @@ a {
   flex-wrap: wrap;
   align-content: center;
   padding-left: 19px;
-  padding-top: 28px;
-  background-color:black;
+  padding-top: 60px;
+  background-color:#1b3c13;
+  color: white;
+  /*opacity:70%*/
 }
 
 .div-user-controls-right {
@@ -73,26 +85,33 @@ a {
 }
 /*************************border boxing *******--------------------*/
 .dashboard-box{
- border: 11px solid black;
-  width:fit-content;
-  min-height: 335px;
-  max-height: 335px;
-  overflow-x: auto;
-  min-width: 323px;
-  max-width: 323px;
-  background-color:grey
-
+border: 0px solid #aabba703;
+    width: fit-content;
+    min-height: 300px;
+    max-height: 300px;
+    overflow-x: auto;
+    min-width: 300px;
+    max-width: 300px;
+    background-color: #78d75429;
   }
 
+  .container-basic{
+     /* margin-right: 30px; */
+    padding-left: 27px;
+    padding-right: 69px;
+    /* width: 0px; */
+    /* border: 0px;*/
+  }
 
   .dashboard-boxlarge{
- border: 1px solid black;
-  width:fit-content;
-    min-height: 335px;
-    max-height: 335px;
-    overflow-x: auto;
-    min-width: 670px;
-    max-width: 670px;
+     /* border: 0px solid black; */
+    width: fit-content;
+    min-height: 370px;
+    max-height: 370px;
+    /* overflow-x: auto; */
+    min-width: 660px;
+    max-width: 660px;
+    background-color: #78d75429;
   }
   .dashboard-boxmed{
  box-sizing: content-box;
@@ -101,16 +120,50 @@ a {
   padding: 10px;
   border: 10px solid blue;
   }
-
-  table {
-  table-layout: auto;
-  width: 100%;
+.table-sm{
+width: 50%;
+}
+table {
+  /*table-layout: auto;*/
+  width: 50%;
+  color: #ffffff;
+  border: 1px;
 }
  /* .center {
   margin-left: auto;
   margin-right: auto;
   text-align:center;
 }*/
+.center-body{
+    margin-left: 13px;
+    color: #ffffff;
+
+}
+
+.cRfgdB .scale {
+    font-size: 12px;
+    fill: rgb(255 255 255);
+    user-select: none;
+}
+h5 {
+    font-family: "Open Sans";
+    font-weight: bold;
+    letter-spacing: 2.1px;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-top: 2px;
+}
+.small, small {
+    font-size: 12px;
+    padding-left: 5px;
+}
+.mr-3 {
+    width: 100px;
+    height: inherit;
+}
+.media{
+    overflow-x: auto;
+}
 /* Graph Control Objects ––––––––––––––––––––––––––––––––––––––––––––––––––*/
 .div-user-controls {
   padding-left: 55px;
