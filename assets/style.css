@@ -94,7 +94,19 @@ border: 0px solid #aabba703;
     max-width: 300px;
     background-color: #78d75429;
   }
+.noBackground{
+background-color: transparent
+}
 
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #1a1a1a;
+    text-decoration: none;
+    background-color: #fff0;
+    border: 1px solid rgba(0,0,0,.125);
+}
   .container-basic{
      /* margin-right: 30px; */
     padding-left: 27px;
@@ -129,6 +141,10 @@ table {
   color: #ffffff;
   border: 1px;
 }
+
+.piechartg{
+height: 100px;
+}
  /* .center {
   margin-left: auto;
   margin-right: auto;
@@ -139,6 +155,7 @@ table {
     color: #ffffff;
 
 }
+
 
 .cRfgdB .scale {
     font-size: 12px;

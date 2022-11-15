@@ -15,6 +15,9 @@ from pandas import DataFrame
 from dash.dependencies import Input, Output, State
 from plotly import graph_objs as go
 from plotly.graph_objs import *
+from plotly.subplots import make_subplots
+
+import plotly.express as px
 
 from datetime import datetime as dt
 import hvplot.pandas
@@ -154,6 +157,50 @@ for month in df.groupby(df.index.month):
 totalList = np.array(totalList)
 
 # Layout of Dash App
+
+
+def farmerData():
+    # percentdata = db.getpercent()
+    # data = dict(
+    #     # character=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+    #     # parent=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+    #     # value=[10, 14, 12, 10, 2, 6, 6, 4, 4])
+    #     character=["Total", "Men", "Women", "<30yrs", "<30yrs"],
+    #     parent=["", "Total", "Total", "Men", "Women"],
+    #     value=[percentdata["Total"], percentdata["Men"], percentdata["Women"], percentdata["Men30"],
+    #            percentdata["Women30"]])
+    #
+    # fig = px.sunburst(
+    #     data,
+    #     names='character',
+    #     parents='parent',
+    #     values='value',
+    # color_discrete_map={'(?)':'black', '(?)':'gold', '(?)':'darkblue'}, width=800, height=400)
+    # fig.update_layout(uniformtext=dict(minsize=30))
+    # return fig
+    labels = [ "Men", "Women", "Men <30yrs", "Women <30yrs"]
+    values = [ 1150, 1350, 600, 300]
+    # fig = make_subplots(1, 2, specs=[[{'type': 'domain'}, {'type': 'domain'}]],
+    #                     subplot_titles=['<30 years', 'Total'])
+    # fig.add_trace(go.Pie(labels=labels, values=[600, 300], scalegroup='one',
+    #                      name="<30 years"), 1, 1)
+    # fig.add_trace(go.Pie(labels=labels, values=[1150, 1350], scalegroup='one',
+    #                      name="Total"), 1, 2)
+    colors=["green", "darg green", "light green", "yellow"]
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+    fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+    fig.update_traces( marker=dict(colors=colors))
+    fig.update_layout(legend=dict(
+        orientation="h",
+        #yanchor="bottom",
+        #y=1.02,
+        xanchor="right",
+        x=1
+    ))
+    fig.update_layout( paper_bgcolor='rgba(0,0,0,0)')
+    return fig
+
+
 app.layout = html.Div(
     children=[
         html.Div(
@@ -281,6 +328,11 @@ app.layout = html.Div(
                              """),
                             html.Pre(id='click-data' ),
                             #, style=styles['pre']
+dbc.Row([
+                                dbc.Col([
+                                    dcc.Input(id='{}'.format(field), type='text', value='{}'.format(field))
+                                ])
+                            ]) for field in ["a", "b", "c"]
                         ]),
                     ],
                 ),
@@ -336,7 +388,7 @@ app.layout = html.Div(
                         # html.H2("Food security risk."),
                         daq.Gauge(
                             color={"gradient":True,"ranges":{"green":[0,3],"yellow":[3,7],"red":[7,10]}},
-                            value=5,
+                            value=7,
                             size=200,
 
                             max=10,
@@ -376,15 +428,15 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     className="card three columns  dashboard-box",
-children=[
-html.Div(className="card-header",
+        children=[
+        html.Div(className="card-header",
                         children=[
                             dcc.Markdown("""
                                 Information
                              """),
                             #, style=styles['pre']
                         ]),
-            html.Div(className="card-body",
+            html.Div(className="card-body noBackground",
                     children=[
                         dbc.ListGroup(
                             [
@@ -397,6 +449,48 @@ html.Div(className="card-header",
                                 ),
 
                             ]),
+                    ]),
+                    ],
+                ),
+        html.Div(
+                    className="card three columns div-for-charts dashboard-box",
+            children=[
+            html.Div(className="card-header",
+                        children=[
+                            dcc.Markdown("""
+                                Total  - 2500 farmers
+                             """),
+                            #, style=styles['pre']
+                        ]),
+            html.Div(className="card-body piechartg ",
+                    children=[
+                        dcc.Graph(figure=farmerData())
+                     ]
+                    ),
+                    ],
+                ),
+
+        html.Div(
+                    className="card three columns  dashboard-box",
+            children=[
+            html.Div(className="card-header",
+                        children=[
+                            dcc.Markdown("""
+                                Contact
+                             """),
+                            #, style=styles['pre']
+                        ]),
+            html.Div(className="card-body",
+                    children=[
+                dcc.Markdown("""
+                               For any information or inquiries, contact us at
+                               
+                               
+                             """),
+                        dcc.Markdown("""
+                              
+                              Email: contact@revemi.com
+                            """),
                     ]),
                     ],
                 ),

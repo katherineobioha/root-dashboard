@@ -1,18 +1,12 @@
-import requests
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
+
 import pandas as pd
-import numpy as np
-import dash_daq as daq
+
 import requests
 import calendar
 from datetime import datetime
 
-from dash.dependencies import Input, Output
-from plotly import graph_objs as go
-from plotly.graph_objs import *
-from datetime import datetime as dt
+import plotly.express as px
+
 
 
 def api_call():
@@ -39,6 +33,25 @@ def api_call():
     return df
 
 
-print('Display weather')
-df = api_call()
-print(df)
+def showData():
+    data = dict(
+        # character=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+        # parent=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+        # value=[10, 14, 12, 10, 2, 6, 6, 4, 4])
+        character=["Total", "Men", "Women", "<30yrs", "<30yrs"],
+        parent=["", "Total", "Total", "Men", "Women"],
+        value=[1560, 12, 12, 12, 12])
+
+    fig = px.sunburst(
+        data,
+        names='character',
+        parents='parent',
+        values='value',
+    )
+    fig.show()
+
+# print('Display weather')
+# df = api_call()
+# print(df)
+
+showData()
