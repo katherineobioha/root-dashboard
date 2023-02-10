@@ -5,21 +5,53 @@ import json
 import googleAPI as gmaps
 import pandas as pd
 import numpy as np
+import re
 
 
 
 ca = certifi.where()
-def getFarmLocation():
-    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+
+def updateGeoCode():
+    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     # CONNECTION_STRING="mongodb://admin:dashrev_emi@ac-iuy7e8x-shard-00-02.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-01.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-00.zpxz50t.mongodb.net:27017/root_revemi?ssl=true&replicaSet=atlas-255sgz-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
 
-    result = client['root_revemi']['user'].aggregate([
+    result = client['root_revemi']['cropsFarmer'].aggregate([
+            {
+                '$group': {
+                    '_id': 'farm',
+                    'fieldN': {
+                        '$addToSet': '$FARM LOCATION'
+                    }
+                }
+            }
+        ])
+
+    for fieldN in result:
+       finalresult = fieldN["fieldN"]
+
+    finalresult.sort(key=str.lower)
+    return finalresult
+
+def getFarmLocation():
+    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true&retryWrites=true&w=majority&maxIdleTimeMS=8000"
+    # CONNECTION_STRING="mongodb://admin:dashrev_emi@ac-iuy7e8x-shard-00-02.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-01.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-00.zpxz50t.mongodb.net:27017/root_revemi?ssl=true&replicaSet=atlas-255sgz-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=8000"
+    client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
+
+    result = client['root_revemi']['cropsFarmer'].aggregate([
     {
         '$match': {
             'FARM LOCATION': {
                 '$in': [
-                    'Udu', 'Uvwie'
+                    re.compile(r"^.*Adonte.*(?i)"), re.compile(r"^.*Afor.*(?i)"), re.compile(r"Udu$(?i)"),
+                    re.compile(r"^.*Amai.*(?i)"), re.compile(r"^.*Agbor.*(?i)"), re.compile(r"^.*Abgbor.*(?i)"),
+                    re.compile(r"^.*Abavo.*(?i)"), re.compile(r"^.*Abala.*(?i)"), re.compile(r"^.*Abah.*(?i)"),
+                    re.compile(r"^.*Aboh.*(?i)"), re.compile(r"^.*Uvwie.*(?i)"), re.compile(r"^.*Okpanam.*(?i)"),
+                    re.compile(r"^.*Amachia.*(?i)"), re.compile(r"^.*Akwuk.*(?i)"), re.compile(r"^.*AKWAEBULU.*(?i)"),
+                    re.compile(r"^.*Akumazi.*(?i)"), re.compile(r"^.*Akoko.*(?i)"), re.compile(r"^.*Akie.*(?i)"),
+                    re.compile(r"^.*AJUEBOR.*(?i)"), re.compile(r"^.*Adairri.*(?i)"), re.compile(r"^.*Abule-Ukw.*(?i)")
+                    # re.compile(r"^udu$(?i)")
+
                 ]
             }
         }
@@ -36,16 +68,17 @@ def getFarmLocation():
     items=[]
     for i in result:
         items.append(i)
-    #items=DataFrame(result)
+
    # z=json.dumps(items[0])
     return items
 
 def getFarmsByLocation(location):
-    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     # CONNECTION_STRING="mongodb://admin:dashrev_emi@ac-iuy7e8x-shard-00-02.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-01.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-00.zpxz50t.mongodb.net:27017/root_revemi?ssl=true&replicaSet=atlas-255sgz-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
-
-    result = client['root_revemi']['user'].aggregate([
+    print("heart *******************************")
+    print(location)
+    result = client['root_revemi']['cropsFarmer'].aggregate([
     {
         '$match': {
             'FARM LOCATION': {
@@ -61,7 +94,7 @@ def getFarmsByLocation(location):
             'SEX': 1,
             'LGA': 1,
             'PHONE NO': 1,
-            'PRODUCT TYPE': 1,
+            'PRODUCT': 1,
             'AGE': 1,
             'FARM SIZE': 1
         }
@@ -79,7 +112,7 @@ def getFarmsByLocation(location):
 
 def addFarmerToDB(farmer):
     print(farmer)
-    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     # CONNECTION_STRING="mongodb://admin:dashrev_emi@ac-iuy7e8x-shard-00-02.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-01.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-00.zpxz50t.mongodb.net:27017/root_revemi?ssl=true&replicaSet=atlas-255sgz-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
 
@@ -96,7 +129,7 @@ def addFarmerToDB(farmer):
     print(x.inserted_id)
 
 def getPercentageForFarmers():
-    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+    CONNECTION_STRING = "mongodb+srv://root_rev_emi:dashrev_emi@cluster0.zpxz50t.mongodb.net/test?authSource=admin&replicaSet=atlas-boo7fm-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     # CONNECTION_STRING="mongodb://admin:dashrev_emi@ac-iuy7e8x-shard-00-02.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-01.zpxz50t.mongodb.net:27017,ac-iuy7e8x-shard-00-00.zpxz50t.mongodb.net:27017/root_revemi?ssl=true&replicaSet=atlas-255sgz-shard-0&authSource=admin&retryWrites=true&w=majority&maxIdleTimeMS=8000"
     client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
 
@@ -238,5 +271,4 @@ def getpercent():
     return data
 
 
-
-
+#print(getFarmLocation())
