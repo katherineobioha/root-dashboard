@@ -29,7 +29,7 @@ app = dash.Dash(
     __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],external_stylesheets=[dbc.themes.LUX],
 )
 app.title = "Roots - Revemi"
-server = app.server
+application = app.server
 ##----------------------- call weather api
 # def api_call(input_value="Ames,us"):
 #     city = 'Delta'
@@ -102,7 +102,7 @@ def getNews():
         newss.append(html.Div([ html.Div(
                  [
                                                     html.A(
-                                                        html.H5(neww.title[i], className="mt-0 mb-1"),
+                                                        html.H5(neww.title[i], className="mt-0 mb-1 news-font"),
                                                         href=neww.link[i]
                                                     ),
 
@@ -160,33 +160,16 @@ totalList = np.array(totalList)
 
 
 def farmerData():
-    # percentdata = db.getpercent()
-    # data = dict(
-    #     # character=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-    #     # parent=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
-    #     # value=[10, 14, 12, 10, 2, 6, 6, 4, 4])
-    #     character=["Total", "Men", "Women", "<30yrs", "<30yrs"],
-    #     parent=["", "Total", "Total", "Men", "Women"],
-    #     value=[percentdata["Total"], percentdata["Men"], percentdata["Women"], percentdata["Men30"],
-    #            percentdata["Women30"]])
-    #
-    # fig = px.sunburst(
-    #     data,
-    #     names='character',
-    #     parents='parent',
-    #     values='value',
-    # color_discrete_map={'(?)':'black', '(?)':'gold', '(?)':'darkblue'}, width=800, height=400)
-    # fig.update_layout(uniformtext=dict(minsize=30))
-    # return fig
-    labels = [ "Men", "Women", "Men <30yrs", "Women <30yrs"]
-    values = [ 1150, 1350, 600, 300]
+
+    labels = [ "Men", "Women", "<30yrs", ">30yrs"]
+    values = [ 1213, 1287, 498, 1596]
     # fig = make_subplots(1, 2, specs=[[{'type': 'domain'}, {'type': 'domain'}]],
     #                     subplot_titles=['<30 years', 'Total'])
     # fig.add_trace(go.Pie(labels=labels, values=[600, 300], scalegroup='one',
     #                      name="<30 years"), 1, 1)
     # fig.add_trace(go.Pie(labels=labels, values=[1150, 1350], scalegroup='one',
     #                      name="Total"), 1, 2)
-    colors=["green", "darg green", "light green", "yellow"]
+    colors=["green", "dark green", "light green", "yellow"]
     fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
     fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
     fig.update_traces( marker=dict(colors=colors))
@@ -314,25 +297,31 @@ app.layout = html.Div(
                     children=[
                         html.Div(className="card-header",
                         children=[
-                            dcc.Markdown("""
+
+                            html.P("""
                                  Farmer Profile
-                             """),
-                        html.Button("Add Farmer",id='open-modal', n_clicks=0, style={"color":"white"})
+                             """, className="addFarmer"),
+                            html.Button("Add Farmer", id='open-modal', n_clicks=0, className="addFarmerBtn")
                             #, style=styles['pre']
                         ]),
                         html.Div(className="card-body",
                         children=[
-                            dcc.Markdown("""
+
+                            html.H6("""
                         
                                  Click on points in the graph to view farmers in that location.
-                             """),
-                            html.Pre(id='click-data' ),
+                             """, className="alert"),
+                            html.Div(id='click-data' ),
                             #, style=styles['pre']
 # dbc.Row([
 #                                 dbc.Col([
 #                                     dcc.Input(id='{}'.format(field), type='text', value='{}'.format(field))
 #                                 ])
+
 #                             ]) for field in ["a", "b", "c"]
+
+#                             ])
+
                         ]),
                     ],
                 ),
@@ -627,7 +616,24 @@ def display_click_data(clickData):
         data =db.getFarmsByLocation(clickData["points"][0]["customdata"])
     if clickData is None:
         return ''
-    return json.dumps(data, indent=2)
+    resultData=DataFrame(data)
+    print(resultData)
+    dropdown = []
+    for i in range(0, len(resultData)):
+        dropdown.append(html.Div([
+            html.Small(resultData.NAME[i], className="dropbtn"),
+            html.Div([
+
+            html.Li("Age: "+ resultData.AGE[i]),
+            html.Li("Sex: "+resultData.SEX[i]),
+            html.Li("Phone no: "+resultData['PHONE NO'][i]['']),
+            html.Li("Product Type: "+resultData['PRODUCT'][i]),
+                ], className="dropdown-content"),
+        ], className="dropdown"
+        ))
+
+    return dropdown
+        # json.dumps(data, indent=2)
 
 # Clear Selected Data if Click Data is used
 # @app.callback(Output("histogram", "selectedData"), [Input("histogram", "clickData")])
@@ -1035,4 +1041,4 @@ def clickMe(clickEvent):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    application.run(port=8000)

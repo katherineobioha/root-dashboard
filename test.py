@@ -55,3 +55,13 @@ def showData():
 # print(df)
 
 showData()
+
+#
+# host app
+# fix 2500 farmers + percentage
+# fix database with proper data
+# add geoLoc
+# Plot data
+# search feature
+
+#https://www.google.com/search?q=convert+excel+to+csv&oq=convert+excl&aqs=chrome.5.69i57j0i10i512l2j0i512j0i10i512l3j0i512l3.7013j0j7&sourceid=chrome&ie=UTF-8
