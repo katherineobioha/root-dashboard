@@ -1,6 +1,6 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import dash_bootstrap_components as dbc
 import pandas as pd
 import numpy as np
@@ -328,11 +328,11 @@ app.layout = html.Div(
                              """),
                             html.Pre(id='click-data' ),
                             #, style=styles['pre']
-dbc.Row([
-                                dbc.Col([
-                                    dcc.Input(id='{}'.format(field), type='text', value='{}'.format(field))
-                                ])
-                            ]) for field in ["a", "b", "c"]
+# dbc.Row([
+#                                 dbc.Col([
+#                                     dcc.Input(id='{}'.format(field), type='text', value='{}'.format(field))
+#                                 ])
+#                             ]) for field in ["a", "b", "c"]
                         ]),
                     ],
                 ),
