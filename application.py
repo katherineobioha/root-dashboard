@@ -16,6 +16,7 @@ from dash.dependencies import Input, Output, State
 from plotly import graph_objs as go
 from plotly.graph_objs import *
 from plotly.subplots import make_subplots
+import ChatGPT as gptAI
 
 import plotly.express as px
 
@@ -465,21 +466,20 @@ app.layout = html.Div(
             html.Div(className="card-header",
                         children=[
                             dcc.Markdown("""
-                                Contact
+                               Ask Roots
                              """),
                             #, style=styles['pre']
                         ]),
             html.Div(className="card-body",
                     children=[
-                dcc.Markdown("""
-                               For any information or inquiries, contact us at
-                               
-                               
-                             """),
-                        dcc.Markdown("""
-                              
-                              Email: contact@revemi.com
-                            """),
+                        dcc.Input(
+                                    id="questions-input",
+                                    type="text"
+                                    # className="form-control",
+                                ),
+                        html.Button('Enter', id='submit-question', n_clicks=0, style={"color":"green"}),
+                        html.Div(id="container-button-basic2", className="container-basic")
+
                     ]),
                     ],
                 ),
@@ -557,6 +557,7 @@ def get_selection(month, day, selection):
 #             holder.append(str(int(x["x"])))
 #     return list(set(holder))
 
+
 @app.callback(
     Output('container-button-basic', 'children'),
     Input('submit-val', 'n_clicks'),
@@ -593,6 +594,28 @@ def update_output(n_clicks, value, value1, value2, value3, value4, value5, value
                                                                                           "border-color": "red"}, className="alert alert-danger", role="alert")
     return msg
 
+#for chatgpt calls
+@app.callback(
+    Output('container-button-basic2', 'children'),
+    Input('submit-question', 'n_clicks'),
+    [State('questions-input', 'value')]
+
+)
+def call_chatGPT(n_clicks, value):
+    #return value ,value1, value2, value3, value4, value5, value6, value7
+    # msg = " "
+    # if "submit-val" == dash.callback_context.triggered:
+    msg=' '
+    try:
+        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+        if 'submit-question' in changed_id:
+
+            x= gptAI.callChatGPT(value)
+            msg = html.Div(x, style ={"color":"green", "align-content":"stretch","font-size":"11px", "border":"2px","border-color": "green"}, className="alert alert-success", role="alert")
+    except:
+        msg=html.Div("An error occured. Please contact the administrator.", style ={"color":"red", "align-content":"stretch","font-size":"11px", "border":"2px",
+                                                                                          "border-color": "red"}, className="alert alert-danger", role="alert")
+    return msg
 
 @app.callback(
     Output("modal", "is_open"),

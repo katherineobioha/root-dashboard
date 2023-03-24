@@ -69,4 +69,4 @@ urllib3==1.26.12
 webencodings==0.5.1
 Werkzeug==2.2.2
 zipp==3.9.0
->>>>>>> 11377e62bb02c036f21699cda4466516b98fb6ab
+openai
