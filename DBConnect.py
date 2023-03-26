@@ -271,4 +271,7 @@ def getpercent():
     return data
 
 
+
 #print(getFarmLocation())
+
+#firstname, lastname, gender, age, country, farm location, product_type, email, username, password

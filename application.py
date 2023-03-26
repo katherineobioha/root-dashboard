@@ -17,6 +17,12 @@ from plotly import graph_objs as go
 from plotly.graph_objs import *
 from plotly.subplots import make_subplots
 import ChatGPT as gptAI
+from flask import Flask, flash, redirect, render_template, request, session, abort
+from passlib.hash import sha256_crypt
+import os
+import operator
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.serving import run_simple
 
 import plotly.express as px
 
@@ -24,13 +30,15 @@ from datetime import datetime as dt
 import hvplot.pandas
 
 
-
+server = Flask(__name__)
+#server=login.app
 
 app = dash.Dash(
-    __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}],external_stylesheets=[dbc.themes.LUX],
+    __name__, server = server, meta_tags=[{"name": "viewport", "content": "width=device-width"}],external_stylesheets=[dbc.themes.LUX],
+    url_base_pathname='/dashpath/'
 )
 app.title = "Roots - Revemi"
-application = app.server
+#application = app.server
 ##----------------------- call weather api
 # def api_call(input_value="Ames,us"):
 #     city = 'Delta'
@@ -56,6 +64,53 @@ styles = {
         'overflowX': 'scroll'
     }
 }
+
+
+
+@server.route('/')
+def home():
+  if not session.get('logged_in'):
+    return render_template('login.html')
+  else:
+    print('redirect to app')
+    return redirect('/dashpath')
+
+
+@server.route('/signUpScreen')
+def signUpscreen():
+  return render_template('signUp.html')
+
+@server.route('/login', methods=['POST'])
+def do_admin_login():
+  login = request.form
+
+  userName = login['username']
+  password = login['password']
+
+  # cur = mariadb_connect.cursor(buffered=True)
+  # data = cur.execute('SELECT * FROM Login WHERE username=%s', (userName))
+  # # data = cur.fetchone()[2]
+  #
+  # if sha256_crypt.verify(password, data):
+  account = True
+  session['logged_in'] = True
+  if account:
+    session['logged_in'] = True
+  else:
+    flash('wrong password!')
+  return home()
+
+@server.route('/logout')
+def logout():
+  session['logged_in'] = False
+  return home()
+
+
+
+
+
+
+
 
 def api_call():
     latInitial =  5.544230
@@ -1064,4 +1119,10 @@ def clickMe(clickEvent):
 
 
 if __name__ == "__main__":
-    application.run(port=8000)
+    server.secret_key = os.urandom(12)
+    app2 = DispatcherMiddleware(server, {
+        '/dash1': app.server,
+    })
+    run_simple('0.0.0.0', 8000, app2, use_reloader=False, use_debugger=False)
+    #app2.run(port=8000)
+
