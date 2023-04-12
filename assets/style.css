@@ -42,10 +42,20 @@ a {
   flex-grow: 1 
 }
 #map-graph {
-  flex-grow: 1 
+  flex-grow: 1;
+  height: 288px;
+
 }
 .mapboxgl-canvas, .mapboxgl-map {
   min-width: 100%;
+}
+
+.columnlarge{
+width: 100%;
+    float: left;
+    box-sizing: border-box;
+    margin-right: 26px;
+    margin-top: -4px;
 }
 /*right panel-----------------------------------------***/
 #histogramse {
@@ -54,10 +64,122 @@ a {
 #map-graphse {
   flex-grow: 1
 }
+
+/***************outer border------------------------*/
+.bordercontainer{
+  border: 1px solid grey;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  padding-left: 19px;
+  padding-top: 60px;
+  background-color:#1b3c13;
+  color: white;
+  /*opacity:70%*/
+}
+
 .div-user-controls-right {
   padding-left: 25px;
   padding-right: 30px;
   padding-top: 64px;
+}
+/*************************border boxing *******--------------------*/
+.dashboard-box{
+border: 0px solid #aabba703;
+    width: fit-content;
+    min-height: 300px;
+    max-height: 300px;
+    overflow-x: auto;
+    min-width: 300px;
+    max-width: 300px;
+    background-color: #78d75429;
+  }
+.noBackground{
+background-color: transparent
+}
+
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #1a1a1a;
+    text-decoration: none;
+    background-color: #fff0;
+    border: 1px solid rgba(0,0,0,.125);
+}
+  .container-basic{
+     /* margin-right: 30px; */
+    padding-left: 27px;
+    padding-right: 69px;
+    /* width: 0px; */
+    /* border: 0px;*/
+  }
+
+  .dashboard-boxlarge{
+     /* border: 0px solid black; */
+    width: fit-content;
+    min-height: 370px;
+    max-height: 370px;
+    /* overflow-x: auto; */
+    min-width: 660px;
+    max-width: 660px;
+    background-color: #78d75429;
+  }
+  .dashboard-boxmed{
+ box-sizing: content-box;
+  width: 100px;
+  height: 100px;
+  padding: 10px;
+  border: 10px solid blue;
+  }
+.table-sm{
+width: 50%;
+}
+table {
+  /*table-layout: auto;*/
+  width: 50%;
+  color: #ffffff;
+  border: 1px;
+}
+
+.piechartg{
+height: 100px;
+}
+ /* .center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align:center;
+}*/
+.center-body{
+    margin-left: 13px;
+    color: #ffffff;
+
+}
+
+
+.cRfgdB .scale {
+    font-size: 12px;
+    fill: rgb(255 255 255);
+    user-select: none;
+}
+h5 {
+    font-family: "Open Sans";
+    font-weight: bold;
+    letter-spacing: 2.1px;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-top: 2px;
+}
+.small, small {
+    font-size: 12px;
+    padding-left: 5px;
+}
+.mr-3 {
+    width: 100px;
+    height: inherit;
+}
+.media{
+    overflow-x: auto;
 }
 /* Graph Control Objects ––––––––––––––––––––––––––––––––––––––––––––––––––*/
 .div-user-controls {
@@ -68,6 +190,13 @@ a {
   padding-top: 12px;
   padding-bottom: 12px;
 }
+.news-font{
+color: white
+}
+h4, .list-group-item h5, .list-group-item h6 {
+    color: white;
+}
+
 .div-for-slider {
   width: 97%;
   text-align: center;
@@ -82,6 +211,8 @@ a {
   color: white;
   
 }
+
+
 
 #bar-selector .Select-multi-value-wrapper{
   max-height: 82px;
@@ -221,5 +352,64 @@ a {
 .CalendarMonth_table td {
   padding: unset;  
 }
+
+.alert {
+  padding: 11px;
+    background-color: #567E3B;
+    color: white;
+    font-size: 9px;
+}
+.addFarmerBtn{
+    color: white;
+    font-size: 9px;
+    display: inline-block;
+    margin-left: 17px;
+    font-weight: 100;
+    height: 36px;
+    padding: 0px 18px;
+}
+.card-header {
+
+    text-transform: uppercase;
+    }
+
+.addFarmer{
+color: white;
+font-size: 13px;
+display: inline-block;
+}
+
+.dropbtn {
+  color: white;
+}
+
+
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #1b3c13;
+  color: white;
+  font-size: 11px;
+  padding: 12px 16px;
+  text-decoration: none;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
 
 
